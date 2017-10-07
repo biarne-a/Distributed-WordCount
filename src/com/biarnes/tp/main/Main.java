@@ -19,7 +19,7 @@ public class Main {
 
 		long timeAfterFileRed = System.currentTimeMillis();
 
-		runner.waitForJobCompletion();
+		runner.waitForCompletion();
 		
 		long timeAfterWordsCount = System.currentTimeMillis();
 

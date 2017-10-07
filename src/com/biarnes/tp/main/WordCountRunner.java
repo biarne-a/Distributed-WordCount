@@ -12,8 +12,8 @@ import com.biarnes.tp.wordcount.WordCounter;
 import com.biarnes.tp.wordcount.WordMap;
 
 public class WordCountRunner {
-	private static final int _nbCores = 8;
-	private WordMap _map = new WordMap();
+	private static final int _nbCores = 4;
+	private WordMap _map;
 	private WordCounter[] _counters;
 	private BlockingQueue<String> _queue;
 	
@@ -25,37 +25,50 @@ public class WordCountRunner {
 	
 	public void startCounters() throws IOException, InterruptedException {
 		for (int i = 0; i < _nbCores; i++) {
-			_counters[i] = new WordCounter(_queue, _map);
+			_counters[i] = new WordCounter(this, _queue, _map);
 			_counters[i].start();
-		}
-	}
-	
-	public void waitForJobCompletion() throws InterruptedException {
-		for (WordCounter counter : _counters) {
-			counter.join();
 		}
 	}
 	
 	public void readFile(String filePath) throws IOException, InterruptedException {
 		BufferedReader br = new BufferedReader(new FileReader(filePath));
+		int nbLines = 1;
 		try {
 		    String line = br.readLine();
 		    while (line != null) {
 		    	_queue.put(line);		    	
 		    	line = br.readLine();
+		    	nbLines++;
 		    }
 		} finally {
+			System.out.println("nb lines = " + nbLines);
 		    br.close();
+		}
+		
+		_counters[0].notifyFileRed();
+	}
+	
+	public void terminateWordCount() throws InterruptedException {
+		for (WordCounter counter : _counters) {
+			counter.interrupt();
+		}
+	}
+	
+	public void waitForCompletion() throws InterruptedException {
+		for (WordCounter counter : _counters) {
+			counter.join();
 		}
 	}
 	
 	public void printResults() {
 		TreeMap<Integer, TreeSet<String>> entries = _map.orderedEntries();
-		System.out.println("map size = " + entries.size());
 		for (Integer count : entries.keySet()) {
 			for (String word : entries.get(count)) {
-				System.out.printf("%s %d%n", word, count);
+//				System.out.printf("%s %d%n", word, count);
 			}
 		}
+		
+		System.out.println("map size = " + _map.size());
+		System.out.println("sorted map size = " + entries.size());
 	}
 }

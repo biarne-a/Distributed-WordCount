@@ -1,14 +1,14 @@
 package com.biarnes.tp.wordcount;
 
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @SuppressWarnings("serial")
-public class WordMap extends HashMap<String, Integer> {
+public class WordMap extends ConcurrentHashMap<String, Integer> {
 	
 	public void addWord(String word) {
 		if (this.containsKey(word)) {

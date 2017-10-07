@@ -2,29 +2,39 @@ package com.biarnes.tp.wordcount;
 
 import java.util.concurrent.BlockingQueue;
 
+import com.biarnes.tp.main.WordCountRunner;
+
 
 public class WordCounter extends Thread {
-	
 	private BlockingQueue<String> _queue;
 	private WordMap _wordMap;
+	private WordCountRunner _runner;
+	private volatile boolean _fileFullyRed = false;
 	
-	public WordCounter(BlockingQueue<String> queue, WordMap wordMap) {
+	public WordCounter(WordCountRunner runner, BlockingQueue<String> queue, WordMap wordMap) {
+		_runner = runner;
 		_queue = queue;
 		_wordMap = wordMap;
 	}
 
 	public void run() {
-		String line;
 		try {
-			line = _queue.take();
-			processLine(line);
+			while (true) {
+				processLine(_queue.take());
+				
+				if (_fileFullyRed && _queue.isEmpty()) {
+					synchronized (this) {
+						_runner.terminateWordCount();
+					}
+					return;
+				}
+			} 
 		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
-
-		while ((line = _queue.poll()) != null) {
-			processLine(line);
-		}
+	}
+	
+	public void notifyFileRed() {
+		_fileFullyRed = true;
 	}
 	
 	private void processLine(String line) {
