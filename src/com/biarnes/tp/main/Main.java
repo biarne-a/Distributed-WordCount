@@ -9,7 +9,7 @@ public class Main {
 			System.err.println("Fatal error: No input file");
 		}
 		long startTime = System.currentTimeMillis();
-
+		
 		WordCountRunner runner = new WordCountRunner();
 		runner.startCounters();
 		

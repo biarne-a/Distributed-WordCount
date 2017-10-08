@@ -19,7 +19,7 @@ public class WordCounter extends Thread {
 
 	public void run() {
 		try {
-			while (true) {
+			while (true) {				
 				processLine(_queue.take());
 				
 				if (_fileFullyRed && _queue.isEmpty()) {

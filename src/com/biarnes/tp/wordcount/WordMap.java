@@ -11,10 +11,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WordMap extends ConcurrentHashMap<String, Integer> {
 	
 	public void addWord(String word) {
-		if (this.containsKey(word)) {
-			this.replace(word, this.get(word) + 1);
-		} else {
-			this.put(word, 1);
+		Integer previousValue = this.putIfAbsent(word, 1);
+		if (previousValue != null) {
+			this.replace(word, previousValue + 1);
 		}
 	}
 

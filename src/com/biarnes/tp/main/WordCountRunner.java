@@ -12,7 +12,7 @@ import com.biarnes.tp.wordcount.WordCounter;
 import com.biarnes.tp.wordcount.WordMap;
 
 public class WordCountRunner {
-	private static final int _nbCores = 4;
+	private static final int _nbCores = 8;
 	private WordMap _map;
 	private WordCounter[] _counters;
 	private BlockingQueue<String> _queue;
@@ -45,7 +45,9 @@ public class WordCountRunner {
 		    br.close();
 		}
 		
-		_counters[0].notifyFileRed();
+		for (WordCounter counter : _counters) {
+			counter.notifyFileRed();
+		}
 	}
 	
 	public void terminateWordCount() throws InterruptedException {
@@ -64,7 +66,7 @@ public class WordCountRunner {
 		TreeMap<Integer, TreeSet<String>> entries = _map.orderedEntries();
 		for (Integer count : entries.keySet()) {
 			for (String word : entries.get(count)) {
-//				System.out.printf("%s %d%n", word, count);
+				System.out.printf("%s %d%n", word, count);
 			}
 		}
 		
